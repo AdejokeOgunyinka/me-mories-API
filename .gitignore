@@ -1,2 +1,5 @@
 venv/
 __pycache__/
+memories_db
+memories_db-shm
+memories_db-wal
