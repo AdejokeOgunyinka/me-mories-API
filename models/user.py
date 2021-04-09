@@ -1,5 +1,6 @@
 from tortoise.models import Model
 from tortoise import fields
+from passlib.hash import bcrypt
 
 
 class User(Model):
@@ -10,3 +11,5 @@ class User(Model):
     created_at = fields.DatetimeField(null=True, auto_now_add=True)
     updated_at = field.DatetimeField(null=True, auto_now=True)
 
+    def verify_password(self, my_password):
+        return bcrypt.verify(my_password, self.password)
