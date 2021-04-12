@@ -5,7 +5,7 @@ from tortoise.contrib.pydantic import pydantic_model_creator
 
 class Category(Model):
     id = fields.UUIDField(pk=True)
-    name = fields.CharField(255)
+    name = fields.CharField(255, unique=True)
     # entry: fields.ReverseRelation['Entry']
     created_at = fields.DatetimeField(null=True, auto_now_add=True)
     updated_at = fields.DatetimeField(null=True, auto_now=True)

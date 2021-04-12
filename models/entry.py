@@ -7,9 +7,8 @@ from .user import User
 
 class Entry(Model):
     id = fields.UUIDField(pk=True)
-    # fields.ForeignKeyField('models.Tournament', related_name='events')
-    category= fields.ForeignKeyField( 'models.Category', related_name='entry')
-    user = fields.ForeignKeyField( 'models.User', related_name='entries')
+    category= fields.CharField(255)
+    user = fields.CharField( 255)
     title = fields.CharField(255)
     content = fields.CharField(255)
     images = fields.JSONField(null=True)
@@ -17,7 +16,7 @@ class Entry(Model):
     updated_at = fields.DatetimeField(null=True, auto_now=True)
 
     class PydanticMeta:
-        exclude = ['created_at', 'updated_at']
+        exclude = ['created_at', 'updated_at', 'user']
 
 
 Entry_Pydantic = pydantic_model_creator(Entry, name='Entry')

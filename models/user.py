@@ -1,6 +1,7 @@
 from tortoise.models import Model
 from tortoise import fields
 from tortoise.contrib.pydantic import pydantic_model_creator
+from passlib.hash import bcrypt
 
 
 class User(Model):
@@ -12,12 +13,11 @@ class User(Model):
     created_at = fields.DatetimeField(null=True, auto_now_add=True)
     updated_at = fields.DatetimeField(null=True, auto_now=True)
 
-    def verify_password(self, my_password):
-        return bcrypt.verify(my_password, self.password)
+    def verify_password(self, password):
+        return bcrypt.verify(password, self.password)
 
     class PydanticMeta:
         exclude = ['created_at', 'updated_at']
-
 
 
 User_Pydantic = pydantic_model_creator(User, name='User')
