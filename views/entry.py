@@ -35,7 +35,7 @@ async def get_one_entry(entry_title: str, current_user: User = Depends(get_curre
 async def create_entry(entry: EntryIn_Pydantic, current_user: User = Depends(get_current_user)):
     category_instance = await Category.filter(name=entry.category.title())
     if category_instance:
-        entry_obj = Entry(category=category_instance.name, user=current_user.username, title=entry.title, content=entry.content, images=entry.images)
+        entry_obj = Entry(category=entry.category, user=current_user.username, title=entry.title, content=entry.content, images=entry.images)
         await entry_obj.save()
         return await Entry_Pydantic.from_tortoise_orm(entry_obj)
     else:
@@ -46,14 +46,16 @@ async def create_entry(entry: EntryIn_Pydantic, current_user: User = Depends(get
 
 @router.put('/entry/{title}', response_model=Entry_Pydantic)
 async def edit_entry(entry_title: str, new_entry_title: str, new_entry_content: str, new_entry_images: dict, current_user: User = Depends(get_current_user)):
-    try:
-        await Entry.filter(user=current_user.username, title=entry_title).update(title=new_entry_title, content=new_entry_content, images=new_entry_images)
-        return await Entry_Pydantic.from_queryset_single(Entry.get(title=new_entry_title))
-    except:
+
+    entry_instance = await Entry.filter(user=current_user.username, title=entry_title)
+    if not entry_instance:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, 
             detail=f'Diary entry with title-{entry_title} does not exist.'
         )
+
+    await Entry.filter(user=current_user.username, title=entry_title).update(title=new_entry_title, content=new_entry_content, images=new_entry_images)
+    return await Entry_Pydantic.from_queryset_single(Entry.get(title=new_entry_title))
 
 @router.delete('/entry/{title}')
 async def delete_entry(entry_title: str, current_user: User = Depends(get_current_user)):
